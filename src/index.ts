@@ -1,9 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
-const connectDB = require('./db');
-const dishesRoutes = require('./routes/dishes');
-const ordersRoutes = require('./routes/orders');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import connectDB from './config/db';
+import dishesRoutes from './routes/dishes';
+import ordersRoutes from './routes/orders';
+
+dotenv.config();
 
 const app = express();
 
@@ -12,7 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 // Basic route
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.json({ message: 'Backend is running' });
 });
 
@@ -34,9 +36,11 @@ const startServer = async () => {
       console.log('Backend is running');
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error('Failed to start server:', error instanceof Error ? error.message : 'Unknown error');
     process.exit(1);
   }
 };
 
 startServer();
+
+

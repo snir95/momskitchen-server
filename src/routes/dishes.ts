@@ -1,19 +1,20 @@
-const express = require('express');
-const router = express.Router();
-const MenuItem = require('../models/Dish');
+import { Router, Request, Response } from 'express';
+import MenuItem, { MenuItemDocument } from '../models/MenuItem';
+
+const router = Router();
 
 // GET /api/dishes - Fetch all dishes
-router.get('/', async (req, res) => {
+router.get('/', async (_req: Request, res: Response) => {
   try {
     const dishes = await MenuItem.find({});
     res.json(dishes);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching dishes', error: error.message });
+    res.status(500).json({ message: 'Error fetching dishes', error: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
 
 // GET /api/dishes/:id - Fetch a specific dish
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req: Request, res: Response) => {
   try {
     const dish = await MenuItem.findById(req.params.id);
     if (!dish) {
@@ -21,35 +22,23 @@ router.get('/:id', async (req, res) => {
     }
     res.json(dish);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching dish', error: error.message });
+    res.status(500).json({ message: 'Error fetching dish', error: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
 
 // POST /api/dishes - Create a new dish
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
-    const { name, description, price, category, image_url, available, ingredients, spice_level } = req.body;
-    
-    const newDish = new MenuItem({
-      name,
-      description,
-      price,
-      category,
-      image_url,
-      available: available !== undefined ? available : true,
-      ingredients,
-      spice_level: spice_level || 'mild'
-    });
-    
+    const newDish = new MenuItem(req.body);
     const savedDish = await newDish.save();
     res.status(201).json(savedDish);
   } catch (error) {
-    res.status(400).json({ message: 'Error creating dish', error: error.message });
+    res.status(400).json({ message: 'Error creating dish', error: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
 
 // PUT /api/dishes/:id - Update a dish
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
@@ -66,12 +55,12 @@ router.put('/:id', async (req, res) => {
     
     res.json(updatedDish);
   } catch (error) {
-    res.status(400).json({ message: 'Error updating dish', error: error.message });
+    res.status(400).json({ message: 'Error updating dish', error: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
 
 // PATCH /api/dishes/:id/availability - Toggle dish availability
-router.patch('/:id/availability', async (req, res) => {
+router.patch('/:id/availability', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { available } = req.body;
@@ -88,12 +77,12 @@ router.patch('/:id/availability', async (req, res) => {
     
     res.json(updatedDish);
   } catch (error) {
-    res.status(400).json({ message: 'Error updating dish availability', error: error.message });
+    res.status(400).json({ message: 'Error updating dish availability', error: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
 
 // DELETE /api/dishes/:id - Delete a dish
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     
@@ -105,8 +94,10 @@ router.delete('/:id', async (req, res) => {
     
     res.json({ message: 'Dish deleted successfully' });
   } catch (error) {
-    res.status(400).json({ message: 'Error deleting dish', error: error.message });
+    res.status(400).json({ message: 'Error deleting dish', error: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
 
-module.exports = router;
+export default router;
+
+

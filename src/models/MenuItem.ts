@@ -1,6 +1,18 @@
-const mongoose = require('mongoose');
+import mongoose, { Document, Schema } from 'mongoose';
+import { MenuItem } from '../types';
 
-const dishSchema = new mongoose.Schema({
+export interface MenuItemDocument extends Document {
+  name: string;
+  description: string;
+  price: number;
+  category: 'appetizer' | 'main' | 'dessert' | 'beverage';
+  image_url?: string;
+  available: boolean;
+  ingredients?: string;
+  spice_level: 'mild' | 'medium' | 'spicy';
+}
+
+const menuItemSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -45,4 +57,6 @@ const dishSchema = new mongoose.Schema({
   timestamps: true
 });
 
-module.exports = mongoose.model('MenuItem', dishSchema);
+export default mongoose.model<MenuItemDocument>('MenuItem', menuItemSchema);
+
+
